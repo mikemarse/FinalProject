@@ -6,14 +6,16 @@ TagManager:
   tags:
   - Bullet
   - Enemy
+  - Water
+  - Pickup
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Pickups
   - Water
   - UI
-  - 
+  - Player
   - 
   - 
   - 
@@ -42,6 +44,15 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Pickups
+    uniqueID: 1690340457
+    locked: 0
+  - name: Water
+    uniqueID: 3476362619
+    locked: 0
+  - name: Player
+    uniqueID: 3026593989
     locked: 0
   - name: UI
     uniqueID: 2457027255

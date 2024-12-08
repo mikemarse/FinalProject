@@ -4,17 +4,6 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 
     void OnTriggerEnter2D(Collider2D other) {
         if (other.CompareTag("Bullet")) {
@@ -39,6 +28,9 @@ public class Bullet : MonoBehaviour
             //Probably need to do something better here instead of just disabling the player.
             //Will just use a death animation here and block any movement.
             other.gameObject.SetActive(false);
+            return;
+        }
+        if (other.CompareTag("Pickup")) {
             return;
         }
         //Keep this for now.

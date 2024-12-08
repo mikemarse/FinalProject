@@ -15,7 +15,7 @@ public class LaserPistol : Weapon
     [SerializeField] int projectileCount;
     [SerializeField] float accuracy = 1f;
 
-    //[SerializeField] AudioSource audioSource;
+    [SerializeField] AudioSource audioSource;
     private bool isFiring = false;
     private float lastFireTime = 0;
     public bool isReloading = false; // change back to private
@@ -45,7 +45,7 @@ public class LaserPistol : Weapon
             //accuracy = Random.Range(.5f, 1f);
             firePoint.Shoot(bulletSpeed, minAccuracy, maxAccuracy, projectileCount);
             lastFireTime = Time.time;
-            //audioSource.Play();
+            audioSource.Play();
             currentAmmo--;
         }
         else {

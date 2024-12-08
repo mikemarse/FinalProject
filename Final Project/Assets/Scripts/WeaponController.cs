@@ -30,9 +30,9 @@ public class WeaponController : MonoBehaviour
             weapons[i] = weaponController.transform.GetChild(i).gameObject;
             weapons[i].SetActive(false);
         }
-        weapons[1].SetActive(true);
-        currentWeapon = weapons[1];
-        weaponImage.sprite = laserShotgun;
+        weapons[0].SetActive(true);
+        currentWeapon = weapons[0];
+        weaponImage.sprite = laserPistol;
     }
 
     // Update is called once per frame

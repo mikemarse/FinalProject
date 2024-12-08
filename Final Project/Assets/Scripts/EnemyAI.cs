@@ -6,12 +6,9 @@ using UnityEngine;
 public class EnemyAI : MonoBehaviour
 {
 
-    public Node currentNode;
-    public List<Node> path = new List<Node>();
-
     [SerializeField] string currentStateString;
     [SerializeField] Enemy myEnemy;
-    [SerializeField] MainCharacter mainCharacter;
+    [SerializeField] public MainCharacter mainCharacter;
     private LaserPistol lasterPistol;
 
     [SerializeField] float sightDistance = 10;
@@ -20,12 +17,27 @@ public class EnemyAI : MonoBehaviour
     delegate void AIState();
     AIState currentState;
 
+    [SerializeField] LayerMask obstructionLayer;
+
+    private bool hasLineOfSight = false;
+
 
 
     //TRACKERS -------------------------------------
     private float stateTime;
     private bool justChangedState = false;
     private Vector3 lastKnownPos;
+
+    [SerializeField] Pathfinder pathfinder;
+
+    void Awake()
+    {
+        pathfinder = GetComponent<Pathfinder>();
+
+        if (pathfinder == null) {
+            Debug.Log("Error getting pathfinder component");
+        }
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -53,6 +65,7 @@ public class EnemyAI : MonoBehaviour
 
     void CharacterDead() {
         //Do absolutely nothing
+        myEnemy.Stop();
     }
 
     void Attack() {
@@ -63,23 +76,40 @@ public class EnemyAI : MonoBehaviour
         }
 
 
+        //myEnemy.Pursue(mainCharacter.transform.position);
+        //myEnemy.AimTarget(mainCharacter.transform.position);
+
+        pathfinder.SetNewGoal(mainCharacter.transform);
+        pathfinder.CalculatePath();
+
         myEnemy.Pursue(mainCharacter.transform.position);
-        myEnemy.AimTarget(mainCharacter.transform.position);
+        myEnemy.AimTarget(mainCharacter.transform.position); 
+
+        // if (!pathfinder.reachedDestination) {
+        //     pathfinder.SetNewGoal(mainCharacter.transform);
+        //     pathfinder.CalculatePath();
+        // }
+        // else {
+        //     myEnemy.Pursue(mainCharacter.transform.position);
+        //     myEnemy.AimTarget(mainCharacter.transform.position);   
+        // }
 
         if (mainCharacter.GetIsDead()) {
             changeState(CharacterDead);
         }
 
-        if (stateTime > 1) {
+        if (stateTime > .5f) {
             myEnemy.GetLaserPistol().Shoot();
+            //Debug.Log("Enemy shots fired!!");
         }
 
         if (myEnemy.GetLaserPistol().GetCurrentAmmo() == 0) {
             myEnemy.GetLaserPistol().Reload();
         }
 
-        if (!DetectedCharacter()) {
+        if (!DetectedCharacter() || !hasLineOfSight) {
             lastKnownPos = mainCharacter.transform.position;
+            pathfinder.SetLastKnownPos(mainCharacter.transform);
             changeState(GetLastKnownPos);
             return;
         }
@@ -91,7 +121,10 @@ public class EnemyAI : MonoBehaviour
             currentStateString = "LastKnownPos State";
         }
 
-        myEnemy.PatrolMove(lastKnownPos);
+        //Instead of doing this, I need to call CalculatePath() and lastKnownPos as a parameter;
+
+
+        pathfinder.CalculatePath();
         myEnemy.AimTarget(lastKnownPos);
 
         if (mainCharacter.GetIsDead()) {
@@ -126,6 +159,7 @@ public class EnemyAI : MonoBehaviour
 
         myEnemy.PatrolMove(patrolPos);
         myEnemy.AimTarget(patrolPos);
+        myEnemy.AimTarget(myEnemy.transform.position + new Vector3(Random.Range(-10f, 10f), Random.Range(-10f, 10f)));
 
         if (mainCharacter.GetIsDead()) {
             changeState(CharacterDead);
@@ -163,8 +197,25 @@ public class EnemyAI : MonoBehaviour
         AITick();
     }
 
-    bool DetectedCharacter() {
-        return Vector3.Distance(myEnemy.transform.position, mainCharacter.transform.position) < sightDistance;
+    public bool DetectedCharacter() {
+        return (Vector3.Distance(myEnemy.transform.position, mainCharacter.transform.position) < sightDistance) && hasLineOfSight;
         //Vector3.Distance(myEnemy.transform.position, mainCharacter.transform.position) > sightDistance
+    }
+
+    public void FixedUpdate()
+    {
+        RaycastHit2D ray = Physics2D.Linecast(transform.position, mainCharacter.transform.position);
+        if (ray.collider != null)
+        {
+            hasLineOfSight = ray.collider.CompareTag("Player");
+            if(hasLineOfSight)
+            {
+                Debug.DrawLine(transform.position, mainCharacter.transform.position, Color.green);
+            } 
+            else
+            {
+                Debug.DrawLine(transform.position, mainCharacter.transform.position, Color.red);
+            }
+        }
     }
 }

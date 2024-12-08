@@ -8,9 +8,13 @@ public class PlayerInputHandler : MonoBehaviour
 
     [SerializeField] MainCharacter mainCharacter;
 
+    [SerializeField] Pathfinder pathfinder;
+
     //[SerializeField] GameObject currentWeapon;
 
     [SerializeField] LaserPistol laserPistol;
+
+    [SerializeField] PauseMenuController pauseMenuController;
 
 
     // Start is called before the first frame update
@@ -26,6 +30,10 @@ public class PlayerInputHandler : MonoBehaviour
         }
 
         Vector3 movement = Vector3.zero;
+
+        if (pauseMenuController.isPaused) {
+            return;
+        }
 
         if (Input.GetKey(KeyCode.W)) {
             movement += new Vector3(0, 1, 0);
@@ -49,8 +57,15 @@ public class PlayerInputHandler : MonoBehaviour
         if (mainCharacter.GetIsDead()) {
             return;
         }
+
+        if (pauseMenuController.isPaused) {
+            return;
+        }
+
         
         mainCharacter.AimTarget(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+
+
 
         if (Input.GetButton("Fire1") && !laserPistol.GetIsFiring()) {
             laserPistol.StartCoroutine(laserPistol.FireWeaponRoutine());

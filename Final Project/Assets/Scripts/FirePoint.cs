@@ -25,7 +25,7 @@ public class FirePoint : MonoBehaviour
             newBullet.transform.Rotate(new Vector3(0, 0, randomAccuracy));
             newBullet.GetComponent<Rigidbody2D>().velocity = newBullet.transform.up * bulletSpeed;
 
-            Destroy(newBullet, 15);
+            Destroy(newBullet, 7);
         }
         
 

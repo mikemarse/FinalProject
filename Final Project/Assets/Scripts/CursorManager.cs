@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 using UnityEngine;
 
 public class CursorManager : MonoBehaviour
@@ -12,6 +13,14 @@ public class CursorManager : MonoBehaviour
     {
         cursorCenter = new Vector2(cursorSprite.width / 2, cursorSprite.height / 2);
         Cursor.SetCursor(cursorSprite, cursorCenter, CursorMode.Auto);
+        
+        /*if (SceneManager.GetActiveScene().name == "MainMenu") {
+            Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
+        }
+        else {
+            cursorCenter = new Vector2(cursorSprite.width / 2, cursorSprite.height / 2);
+            Cursor.SetCursor(cursorSprite, cursorCenter, CursorMode.Auto);
+        }*/
     }
 
     // Update is called once per frame
